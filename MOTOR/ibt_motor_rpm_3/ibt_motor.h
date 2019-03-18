@@ -40,6 +40,8 @@
 
 enum rotateState {CW, CCW, STOP}; // 0 1 2
 
+// LPWM high, L IS high 
+
 class IBT_Motor
 {
   private:

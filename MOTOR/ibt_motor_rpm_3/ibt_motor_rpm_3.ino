@@ -32,28 +32,33 @@ void loop()
   //    }
 
   /* Testing for GOTOANGLE*/
-    Hip.GoToAngle(550, 230);
-    while (Hip._IsRotate != STOP)
-    {
-      timer1.update();
-    }
+  Hip.GoToAngle(450, 125);
+  while (Hip._IsRotate != STOP)
+  {
+    timer1.update();
+    Serial.print(analogRead(18));Serial.print(" - "); //cw, 19 high, 18 low
+    Serial.println(analogRead(19));
+  }
+
+  Hip.GoToAngle(700, 40);
+  while (Hip._IsRotate != STOP)
+  {
+    timer1.update();
+    Serial.print(analogRead(18)); Serial.print(" - ");//ccw, 19 low, 18 high
+    Serial.println(analogRead(19));
+  }
   
-    Hip.GoToAngle(800, 150);
-    while (Hip._IsRotate != STOP)
-    {
-      timer1.update();
-    }
 
   /*check blink() running time*/
-//  long int test = micros ();
-//  blink();
-//  Serial.println(micros() - test);
+  //  long int test = micros ();
+  //  blink();
+  //  Serial.println(micros() - test);
 }
 
 void blink() {
   // update the ADC that has been filtered
   Hip.UpdateADC();
-  Serial.print(Hip.GetADC()); Serial.print(" "); Serial.print(Hip.GetFilteredADC()); Serial.print(" "); Serial.println(Hip.GetOmega());
+//  Serial.print(Hip.GetADC()); Serial.print(" "); Serial.println(Hip.GetFilteredADC()); //Serial.print(" "); Serial.println(Hip.GetOmega());
   int delta = abs(Hip.GetTarget() - Hip.GetADC()); //*0.29325513196;
   if (delta > 2)
   {
