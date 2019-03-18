@@ -1,7 +1,7 @@
 /*
   ||
   || @file ibt_motor.h
-  || @version 1.0
+  || @version 1.2
   || @author Yoland Nababan
   ||
   || @description
@@ -62,12 +62,17 @@ class IBT_Motor
     void Brake(bool isHigh);
 
     /*GETTER*/
-    int GetADC();
+    int GetADC(){return this->_ADC;}
     int GetFilteredADC(){return _filteredADC;}
-    float GetAngle();
+    float GetAngle(){return map(analogRead(_SensorPin), 0, 1023, 0, 300);}
     int GetTarget(){return _target;}
     rotateState GetRotate() {return _IsRotate;}
     int GetSpeed(){return _speed;}
+    int GetOmega(){return _omega;}
+
+    /*SETTER*/
+    void SetRotate(rotateState Rotate){_IsRotate = Rotate; }
+//    void SetOmega (){_omega = _filteredADC - prevADC;} 
 
     // variable
     Stream &serial;
@@ -88,6 +93,7 @@ class IBT_Motor
 #endif
 /*
   || @changelog
+  || | 1.2 2019-03-18 - Yoland Nababan : Add Getter and implement Driver
   || | 1.1 2019-03-16 - Yoland Nababan : FILTERING ADC using Moving Average
   || | 1.0 2019-03-13 - Yoland Nababan : Using ticker timer to sampling (https://github.com/sstaub/Ticker)
   || | 1.0 2019-03-13 - Yoland Nababan : Initial Release

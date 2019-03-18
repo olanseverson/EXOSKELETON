@@ -1,7 +1,7 @@
 /*
   ||
   || @file ibt_motor.cpp
-  || @version 1.1
+  || @version 1.2
   || @author Yoland Nababan
   ||
   || @description
@@ -47,12 +47,9 @@ void IBT_Motor::Brake(bool isHigh)
   }
 }
 
-int IBT_Motor::GetADC() {
-  return this->_ADC;
-}
-
 void IBT_Motor::UpdateADC()
 {
+  _prevADC = _filteredADC;
   this->_ADC = analogRead(_SensorPin);
   BUFFER[idxBuff] = _ADC;
   idxBuff++;
@@ -66,13 +63,8 @@ void IBT_Motor::UpdateADC()
     temp += BUFFER[i];
   }
   _filteredADC = temp/MA_COEFF;
+  _omega = _filteredADC - _prevADC;
 }
-
-float IBT_Motor::GetAngle()
-{
-  return map(analogRead(_SensorPin), 0, 1023, 0, 300);
-}
-
 
 void IBT_Motor::TurnCW(int minValue, int Speed)
 {
@@ -135,3 +127,14 @@ void IBT_Motor::GoToAngle(int toAngle, int Speed)
   }
 
 }
+
+
+
+/*
+  || @changelog
+  || | 1.2 2019-03-18 - Yoland Nababan : Add Getter and implement Driver
+  || | 1.1 2019-03-16 - Yoland Nababan : FILTERING ADC using Moving Average
+  || | 1.0 2019-03-13 - Yoland Nababan : Using ticker timer to sampling (https://github.com/sstaub/Ticker)
+  || | 1.0 2019-03-13 - Yoland Nababan : Initial Release
+  || #
+*/
