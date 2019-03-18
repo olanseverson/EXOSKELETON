@@ -68,7 +68,6 @@ class IBT_Motor
 
     // dummy
     void UpdateADC();
-//    void UpdateADC(int MA);
     int _IsRotate = STOP;
     volatile int _speed;
     int _target;
