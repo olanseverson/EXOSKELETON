@@ -96,6 +96,25 @@ void IBT_Motor::TurnCCW(int maxValue, int Speed)
 #endif
 }
 
+void IBT_Motor::Driver(rotateState IsRotate, int Speed = 255)
+{
+  switch (IsRotate)
+    {
+      case CCW :
+        analogWrite(_LPWM, 0);
+        analogWrite(_RPWM, Speed);
+        break;
+      case CW :
+        analogWrite(_LPWM, Speed);
+        analogWrite(_RPWM, 0);
+        break;
+      case STOP :
+        analogWrite(_LPWM, Speed);
+        analogWrite(_RPWM, Speed);
+        break;
+    }
+}
+
 void IBT_Motor::GoToAngle(int toAngle, int Speed)
 // Speed   : 0 - 255
 // toAngle : 0 - 1023 degree

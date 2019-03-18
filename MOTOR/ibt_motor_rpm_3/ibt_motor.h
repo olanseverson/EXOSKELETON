@@ -56,19 +56,25 @@ class IBT_Motor
     IBT_Motor(int Pin_RPWM, int Pin_LPWM, int SensorPin, Stream &serial);
     void TurnCCW(int maxValue, int Speed);
     void TurnCW(int minValue, int Speed);
+    void Driver(enum rotateState, int Speed);
     void GoToAngle(int toAngle, int Speed);
     void debug();
     void Brake(bool isHigh);
+
+    /*GETTER*/
     int GetADC();
     int GetFilteredADC(){return _filteredADC;}
     float GetAngle();
+    int GetTarget(){return _target;}
+    rotateState GetRotate() {return _IsRotate;}
+    int GetSpeed(){return _speed;}
 
     // variable
     Stream &serial;
 
     // dummy
     void UpdateADC();
-    int _IsRotate = STOP;
+    rotateState _IsRotate = STOP;
     volatile int _speed;
     int _target;
     int _RPWM;
