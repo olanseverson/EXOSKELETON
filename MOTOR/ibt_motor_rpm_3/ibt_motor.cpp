@@ -21,6 +21,7 @@ IBT_Motor::IBT_Motor(int Pin_RPWM, int Pin_LPWM, int SensorPin, Stream &serial):
   serial(serial)
 {
   _filteredADC = analogRead(_SensorPin);
+  _prevADC = _filteredADC;
   for (int i = 0; i < MA_COEFF; i++)
   {
     BUFFER[i] = _filteredADC;
@@ -49,7 +50,6 @@ void IBT_Motor::Brake(bool isHigh)
 
 void IBT_Motor::UpdateADC()
 {
-  _prevADC = _filteredADC;
   this->_ADC = analogRead(_SensorPin);
   BUFFER[idxBuff] = _ADC;
   idxBuff++;
@@ -62,8 +62,17 @@ void IBT_Motor::UpdateADC()
   {
     temp += BUFFER[i];
   }
-  _filteredADC = temp/MA_COEFF;
-  _omega = _filteredADC - _prevADC;
+  _filteredADC = temp / MA_COEFF;
+}
+
+void IBT_Motor::UpdateOmega(uint32_t count )
+{
+  if (count % 50 == 0)
+  {
+    _omega = _filteredADC - _prevADC;
+    serial.println(_omega);
+    _prevADC = _filteredADC;
+  }
 }
 
 void IBT_Motor::TurnCW(int minValue, int Speed)
@@ -91,20 +100,20 @@ void IBT_Motor::TurnCCW(int maxValue, int Speed)
 void IBT_Motor::Driver(rotateState IsRotate, int Speed = 255)
 {
   switch (IsRotate)
-    {
-      case CCW :
-        analogWrite(_LPWM, 0);
-        analogWrite(_RPWM, Speed);
-        break;
-      case CW :
-        analogWrite(_LPWM, Speed);
-        analogWrite(_RPWM, 0);
-        break;
-      case STOP :
-        analogWrite(_LPWM, Speed);
-        analogWrite(_RPWM, Speed);
-        break;
-    }
+  {
+    case CCW :
+      analogWrite(_LPWM, 0);
+      analogWrite(_RPWM, Speed);
+      break;
+    case CW :
+      analogWrite(_LPWM, Speed);
+      analogWrite(_RPWM, 0);
+      break;
+    case STOP :
+      analogWrite(_LPWM, Speed);
+      analogWrite(_RPWM, Speed);
+      break;
+  }
 }
 
 void IBT_Motor::GoToAngle(int toAngle, int Speed)
@@ -125,13 +134,13 @@ void IBT_Motor::GoToAngle(int toAngle, int Speed)
   { // stop
     _IsRotate = STOP;
   }
-
 }
 
 
 
 /*
   || @changelog
+|| | 1.2 2019-03-20 - Yoland Nababan : Add UpdateOmega
   || | 1.2 2019-03-18 - Yoland Nababan : Add Getter and implement Driver
   || | 1.1 2019-03-16 - Yoland Nababan : FILTERING ADC using Moving Average
   || | 1.0 2019-03-13 - Yoland Nababan : Using ticker timer to sampling (https://github.com/sstaub/Ticker)

@@ -81,6 +81,7 @@ class IBT_Motor
 
     // dummy
     void UpdateADC();
+    void UpdateOmega(uint32_t count );
     rotateState _IsRotate = STOP;
     volatile int _speed;
     int _target;
@@ -95,6 +96,7 @@ class IBT_Motor
 #endif
 /*
   || @changelog
+  || | 1.2 2019-03-20 - Yoland Nababan : Add UpdateOmega
   || | 1.2 2019-03-18 - Yoland Nababan : Add Getter and implement Driver
   || | 1.1 2019-03-16 - Yoland Nababan : FILTERING ADC using Moving Average
   || | 1.0 2019-03-13 - Yoland Nababan : Using ticker timer to sampling (https://github.com/sstaub/Ticker)
