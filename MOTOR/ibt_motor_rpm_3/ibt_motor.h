@@ -51,6 +51,12 @@ class IBT_Motor
     volatile int _prevADC ;
     int BUFFER[MA_COEFF];
     int idxBuff;
+    volatile int _speed;
+    int _target;
+    int _RPWM;
+    int _LPWM;
+    int _SensorPin;
+    int _omega;
 
 
   public:
@@ -62,6 +68,7 @@ class IBT_Motor
     void GoToAngle(int toAngle, int Speed);
     void debug();
     void Brake(bool isHigh);
+    void PIDController (double Kp, double Kd , double Ki);
 
     /*GETTER*/
     int GetADC(){return this->_ADC;}
@@ -74,23 +81,24 @@ class IBT_Motor
 
     /*SETTER*/
     void SetRotate(rotateState Rotate){_IsRotate = Rotate; }
-//    void SetOmega (){_omega = _filteredADC - prevADC;} 
-
+    
     // variable
     Stream &serial;
 
     // dummy
     void UpdateADC();
-    void UpdateOmega(uint32_t count );
+    void UpdateOmega();
     rotateState _IsRotate = STOP;
-    volatile int _speed;
-    int _target;
-    int _RPWM;
-    int _LPWM;
-    int _SensorPin;
-
-    int _omega;
     int _prevOmega;
+    int _omegaMax;
+    //PID constants
+    
+     long int PID_p;    
+     long int PID_d;
+     long int PID_i;    
+
+     long int PID_value;
+    
 };
 
 #endif

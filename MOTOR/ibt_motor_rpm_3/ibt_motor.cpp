@@ -27,6 +27,10 @@ IBT_Motor::IBT_Motor(int Pin_RPWM, int Pin_LPWM, int SensorPin, Stream &serial):
     BUFFER[i] = _filteredADC;
   }
   idxBuff = 0;
+  _omegaMax = 0;
+  PID_p = 0;
+  PID_i = 0;
+  PID_value = 0;
 }
 
 void IBT_Motor::debug()
@@ -48,32 +52,7 @@ void IBT_Motor::Brake(bool isHigh)
   }
 }
 
-void IBT_Motor::UpdateADC()
-{
-  this->_ADC = analogRead(_SensorPin);
-  BUFFER[idxBuff] = _ADC;
-  idxBuff++;
-  if (idxBuff == MA_COEFF)
-  {
-    idxBuff = 0;
-  }
-  long int temp = 0;
-  for (int i = 0; i < MA_COEFF; i++)
-  {
-    temp += BUFFER[i];
-  }
-  _filteredADC = temp / MA_COEFF;
-}
 
-void IBT_Motor::UpdateOmega(uint32_t count )
-{
-  if (count % 50 == 0)
-  {
-    _omega = _filteredADC - _prevADC;
-    serial.println(_omega);
-    _prevADC = _filteredADC;
-  }
-}
 
 void IBT_Motor::TurnCW(int minValue, int Speed)
 {
@@ -135,12 +114,63 @@ void IBT_Motor::GoToAngle(int toAngle, int Speed)
     _IsRotate = STOP;
   }
 }
+void IBT_Motor::UpdateADC()
+{
+  this->_ADC = analogRead(_SensorPin);
+  BUFFER[idxBuff] = _ADC;
+  idxBuff++;
+  if (idxBuff == MA_COEFF)
+  {
+    idxBuff = 0;
+  }
+  long int temp = 0;
+  for (int i = 0; i < MA_COEFF; i++)
+  {
+    temp += BUFFER[i];
+  }
+  _filteredADC = temp / MA_COEFF;
+}
 
+void IBT_Motor::UpdateOmega()
+{
+  _omega = _filteredADC - _prevADC;
+  _prevADC = _filteredADC;
+//  _omegaMax = (abs(_omega) > _omegaMax) ? abs(_omega) : _omegaMax;
+//    serial.print(" omegamax "); serial.print(_omegaMax);
+}
 
+void IBT_Motor::PIDController (double Kp, double Kd, double Ki)
+{
+  int Speed = 100 * _speed / 255.0;
+  int omega =  100 * _omega / 10;
+  int error = Speed - omega;
+
+  
+  serial.print(" _omega: "); serial.print(_omega);
+  serial.print(" omega "); serial.print(omega);
+
+  PID_p = Kp * error;
+  if (-30 < error < 30)
+  {
+    PID_i += Ki * error;
+  }
+
+  PID_value = PID_p + PID_i;
+  //  serial.print(" pid ");serial.println(PID_value);
+  PID_value = (PID_value > 100) ? 100 : PID_value;
+  PID_value = (PID_value < 0) ? 0 : PID_value;
+  PID_value = PID_value * 255 / 100;
+
+  //  serial.print(" adc: ");serial.print(_filteredADC);
+  serial.print(" Speed: "); serial.print(Speed);
+  
+  serial.print(" error "); serial.println(error);
+
+}
 
 /*
   || @changelog
-|| | 1.2 2019-03-20 - Yoland Nababan : Add UpdateOmega
+  || | 1.2 2019-03-20 - Yoland Nababan : Add UpdateOmega
   || | 1.2 2019-03-18 - Yoland Nababan : Add Getter and implement Driver
   || | 1.1 2019-03-16 - Yoland Nababan : FILTERING ADC using Moving Average
   || | 1.0 2019-03-13 - Yoland Nababan : Using ticker timer to sampling (https://github.com/sstaub/Ticker)
