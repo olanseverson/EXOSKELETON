@@ -19,32 +19,21 @@ void setup()
 
 void loop()
 {
-  /* Testing for TURN CW AND CCW*/
-  //    timer1.update();
-  //    Hip.TurnCW(550, 220); //angle (0-1023); speed
-  //    while (Hip._IsRotate!=STOP){
-  //      timer1.update();
-  //    }
-  //    Hip.TurnCCW(800, 60); //angle (0-1023); speed
-  //    while (Hip._IsRotate!=STOP){
-  //      timer1.update();
-  //    }
 
   /* Testing for GOTOANGLE*/
-  Hip.GoToAngle(400, 110); // 100
+  int pwm = 150;
+  Hip.GoToAngle(450, 150); // 100
   while (Hip._IsRotate != STOP)
   {
     timer1.update();
-    //        Serial.print(analogRead(18));Serial.print(" - "); //cw, 19 high, 18 low
-    //        Serial.println(analogRead(19));
   }
+  Hip.PID_i = 0;
+  Hip.SetSpeed(150);
 
-  Hip.GoToAngle(750, 60);
+  Hip.GoToAngle(650, 60);
   while (Hip._IsRotate != STOP)
   {
     timer1.update();
-    //        Serial.print(analogRead(18)); Serial.print(" - ");//ccw, 19 low, 18 high
-    //        Serial.println(analogRead(19));
   }
 
 
@@ -57,15 +46,17 @@ void loop()
 void blink() {
   // update the ADC that has been filtered
   Hip.UpdateADC();
-  if (timer1.counter() % 25 == 0 && timer1.counter() > 250)
+  if (timer1.counter() % 25 == 0)
   {
     Hip.UpdateOmega();
-    Hip.PIDController(0.6368, 0, 1.336);
-  }
-  //  Serial.print(Hip.GetRotate()); Serial.println(" ");
-  //  Serial.print(Hip.GetADC()); Serial.print(" ");
-  //  Serial.print(Hip.GetFilteredADC()); Serial.print(" ");
+    if ( Hip.GetRotate () == 0)
+    {
+      Hip.PIDController(0.01508, 0, 1.207);
 
+    }
+
+    Serial.print(" - ");
+  }
   int delta = abs(Hip.GetTarget() - Hip.GetADC());
   if (delta > 2)
   {
@@ -79,4 +70,7 @@ void blink() {
   //testing blink for timing
   digitalWrite(LED_BUILTIN, ledState);
   ledState = !ledState;
+//  Serial.print(Hip.GetADC()); Serial.print(" ");
+//  Serial.print(Hip.GetFilteredADC()); Serial.print(" ");
+//  Serial.print(Hip.GetRotate()); Serial.println(" ");
 }

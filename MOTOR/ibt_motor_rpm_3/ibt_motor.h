@@ -40,7 +40,7 @@
 
 enum rotateState {CW, CCW, STOP}; // 0 1 2
 
-// LPWM high, L IS high 
+// LPWM high, L IS high
 
 class IBT_Motor
 {
@@ -56,7 +56,7 @@ class IBT_Motor
     int _RPWM;
     int _LPWM;
     int _SensorPin;
-    int _omega;
+    double _omega;
 
 
   public:
@@ -71,17 +71,36 @@ class IBT_Motor
     void PIDController (double Kp, double Kd , double Ki);
 
     /*GETTER*/
-    int GetADC(){return this->_ADC;}
-    int GetFilteredADC(){return _filteredADC;}
-    float GetAngle(){return map(analogRead(_SensorPin), 0, 1023, 0, 300);}
-    int GetTarget(){return _target;}
-    rotateState GetRotate() {return _IsRotate;}
-    int GetSpeed(){return _speed;}
-    int GetOmega(){return _omega;}
+    int GetADC() {
+      return this->_ADC;
+    }
+    int GetFilteredADC() {
+      return _filteredADC;
+    }
+    float GetAngle() {
+      return map(analogRead(_SensorPin), 0, 1023, 0, 300);
+    }
+    int GetTarget() {
+      return _target;
+    }
+    rotateState GetRotate() {
+      return _IsRotate;
+    }
+    int GetSpeed() {
+      return _speed;
+    }
+    int GetOmega() {
+      return _omega;
+    }
 
     /*SETTER*/
-    void SetRotate(rotateState Rotate){_IsRotate = Rotate; }
-    
+    void SetRotate(rotateState Rotate) {
+      _IsRotate = Rotate;
+    }
+    void SetSpeed(int Speed) {
+      _speed = Speed;
+    }
+
     // variable
     Stream &serial;
 
@@ -92,13 +111,14 @@ class IBT_Motor
     int _prevOmega;
     int _omegaMax;
     //PID constants
-    
-     long int PID_p;    
-     long int PID_d;
-     long int PID_i;    
 
-     long int PID_value;
-    
+    double PID_p;
+    double PID_d;
+    double PID_i;
+    double prev_error;
+
+    double PID_value;
+
 };
 
 #endif

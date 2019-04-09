@@ -135,37 +135,30 @@ void IBT_Motor::UpdateOmega()
 {
   _omega = _filteredADC - _prevADC;
   _prevADC = _filteredADC;
-//  _omegaMax = (abs(_omega) > _omegaMax) ? abs(_omega) : _omegaMax;
-//    serial.print(" omegamax "); serial.print(_omegaMax);
 }
 
 void IBT_Motor::PIDController (double Kp, double Kd, double Ki)
 {
-  int Speed = 100 * _speed / 255.0;
-  int omega =  100 * _omega / 10;
-  int error = Speed - omega;
+  double setpoint = _speed / 255.0;
+  double omega =  abs(_omega / 14.0);
+  double error = setpoint - omega ;
 
-  
-  serial.print(" _omega: "); serial.print(_omega);
-  serial.print(" omega "); serial.print(omega);
+  PID_i = PID_i + error;
+  PID_d = error - prev_error;
+  prev_error = error;
+  PID_value = (int)(error * Kp + PID_i * Ki + PID_d * Kd);
 
-  PID_p = Kp * error;
-  if (-30 < error < 30)
-  {
-    PID_i += Ki * error;
-  }
+//    serial.print(" rpm: ");serial.print(_omega);
+//    serial.print(" setpoint: ");serial.print(setpoint);
+//    serial.print(" omega: "); serial.print(omega);
+  serial.print(" error: "); serial.print(error);
+  serial.print(" integral: "); serial.print(PID_i);
+  serial.print(" value: "); serial.println(PID_value);
 
-  PID_value = PID_p + PID_i;
-  //  serial.print(" pid ");serial.println(PID_value);
+
   PID_value = (PID_value > 100) ? 100 : PID_value;
   PID_value = (PID_value < 0) ? 0 : PID_value;
   PID_value = PID_value * 255 / 100;
-
-  //  serial.print(" adc: ");serial.print(_filteredADC);
-  serial.print(" Speed: "); serial.print(Speed);
-  
-  serial.print(" error "); serial.println(error);
-
 }
 
 /*
