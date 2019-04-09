@@ -20,27 +20,27 @@ void setup()
 void loop()
 {
 
-  /* Testing for GOTOANGLE*/
-  int pwm = 150;
-  Hip.GoToAngle(450, 150); // 100
-  while (Hip._IsRotate != STOP)
-  {
-    timer1.update();
-  }
-  Hip.PID_i = 0;
-  Hip.SetSpeed(150);
-
-  Hip.GoToAngle(650, 60);
-  while (Hip._IsRotate != STOP)
-  {
-    timer1.update();
-  }
+//  /* Testing for GOTOANGLE*/
+//  int pwm = 150;
+//  Hip.GoToAngle(450, 150); // 100
+//  while (Hip._IsRotate != STOP)
+//  {
+//    timer1.update();
+//  }
+//  Hip.PID_i = 0;
+//  Hip.SetSpeed(150);
+//
+//  Hip.GoToAngle(650, 60);
+//  while (Hip._IsRotate != STOP)
+//  {
+//    timer1.update();
+//  }
 
 
   /*check blink() running time*/
-  //    long int test = micros ();
-  //    blink();
-  //    Serial.println(micros() - test);
+      long int test = micros ();
+      blink();
+      Serial.println(micros() - test);
 }
 
 void blink() {
@@ -55,7 +55,7 @@ void blink() {
 
     }
 
-    Serial.print(" - ");
+//    Serial.print(" - ");
   }
   int delta = abs(Hip.GetTarget() - Hip.GetADC());
   if (delta > 2)
@@ -70,7 +70,7 @@ void blink() {
   //testing blink for timing
   digitalWrite(LED_BUILTIN, ledState);
   ledState = !ledState;
-//  Serial.print(Hip.GetADC()); Serial.print(" ");
-//  Serial.print(Hip.GetFilteredADC()); Serial.print(" ");
+  Serial.print(Hip.GetADC()); Serial.print(" ");
+  Serial.print(Hip.GetFilteredADC()); Serial.print(" ");
 //  Serial.print(Hip.GetRotate()); Serial.println(" ");
 }

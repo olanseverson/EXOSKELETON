@@ -22,9 +22,9 @@ IBT_Motor::IBT_Motor(int Pin_RPWM, int Pin_LPWM, int SensorPin, Stream &serial):
 {
   _filteredADC = analogRead(_SensorPin);
   _prevADC = _filteredADC;
-  for (int i = 0; i < MA_COEFF; i++)
+  for (int i = 0; i < BUFFERLENGTH; i++)
   {
-    BUFFER[i] = _filteredADC;
+    BUFFER[i] = 0;
   }
   idxBuff = 0;
   _omegaMax = 0;
@@ -117,18 +117,32 @@ void IBT_Motor::GoToAngle(int toAngle, int Speed)
 void IBT_Motor::UpdateADC()
 {
   this->_ADC = analogRead(_SensorPin);
-  BUFFER[idxBuff] = _ADC;
-  idxBuff++;
-  if (idxBuff == MA_COEFF)
-  {
-    idxBuff = 0;
+  //  BUFFER[idxBuff] = _ADC;
+  //  idxBuff++;
+  //  if (idxBuff == MA_COEFF)
+  //  {
+  //    idxBuff = 0;
+  //  }
+  //  long int temp = 0;
+  //  for (int i = 0; i < MA_COEFF; i++)
+  //  {
+  //    temp += BUFFER[i];
+  //  }
+  //  _filteredADC = temp / MA_COEFF;
+  float hasil ;
+  //buffering
+  for (int j = BUFFERLENGTH - 1; j > 0; j--) {
+    BUFFER[j] = BUFFER[j - 1];
   }
-  long int temp = 0;
-  for (int i = 0; i < MA_COEFF; i++)
-  {
-    temp += BUFFER[i];
+  //input disimpan di buffer 0
+  BUFFER[0] = _ADC;
+  // perhitungan filter
+  hasil = 0;
+  for (int j = 0; j < BUFFERLENGTH; j++) {
+    hasil += BUFFER[j] * koef_filter[j];
   }
-  _filteredADC = temp / MA_COEFF;
+  // kembalikan hasil pemfilteran
+  _filteredADC = hasil;
 }
 
 void IBT_Motor::UpdateOmega()
@@ -148,13 +162,12 @@ void IBT_Motor::PIDController (double Kp, double Kd, double Ki)
   prev_error = error;
   PID_value = (int)(error * Kp + PID_i * Ki + PID_d * Kd);
 
-//    serial.print(" rpm: ");serial.print(_omega);
-//    serial.print(" setpoint: ");serial.print(setpoint);
-//    serial.print(" omega: "); serial.print(omega);
-  serial.print(" error: "); serial.print(error);
-  serial.print(" integral: "); serial.print(PID_i);
-  serial.print(" value: "); serial.println(PID_value);
-
+  //    serial.print(" rpm: ");serial.print(_omega);
+  //    serial.print(" setpoint: ");serial.print(setpoint);
+  //    serial.print(" omega: "); serial.print(omega);
+  //  serial.print(" error: "); serial.print(error);
+  //  serial.print(" integral: "); serial.print(PID_i);
+  //  serial.print(" value: "); serial.println(PID_value);
 
   PID_value = (PID_value > 100) ? 100 : PID_value;
   PID_value = (PID_value < 0) ? 0 : PID_value;

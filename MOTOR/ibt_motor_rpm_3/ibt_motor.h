@@ -35,7 +35,8 @@
 
 #include <Arduino.h>
 
-#define MA_COEFF 100
+#define BUFFERLENGTH 21
+
 //#define DEBUG_ON  //comment to disable debug()
 
 enum rotateState {CW, CCW, STOP}; // 0 1 2
@@ -47,9 +48,16 @@ class IBT_Motor
   private:
     volatile long int _ADC_Temp;
     volatile int _ADC;
-    volatile int _filteredADC;
+    volatile float _filteredADC;
     volatile int _prevADC ;
-    int BUFFER[MA_COEFF];
+    float BUFFER[BUFFERLENGTH];
+    float koef_filter[BUFFERLENGTH] = {
+      0.0074, 0.0094, 0.0154, 0.0248, 0.0366, 0.0496, 0.0627, 0.0745, 0.0838, 0.0898, 0.0919, 0.0898,
+      0.0838, 0.0745, 0.0627, 0.0496, 0.0366, 0.0248, 0.0154, 0.0094, 0.0074
+    };
+//    float koef_filter[BUFFERLENGTH] = {
+//      0.0146, 0.0306, 0.0726, 0.1245, 0.1665, 0.1825, 0.1665, 0.1245, 0.0726, 0.0306, 0.0146
+//    };
     int idxBuff;
     volatile int _speed;
     int _target;
