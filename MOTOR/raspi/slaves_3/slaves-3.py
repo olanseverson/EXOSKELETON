@@ -20,11 +20,11 @@ def readNumber(address):
 
 def encodeAddress(argument):
     switcher = {
-        4: 0x04,
-        5: 0x05,
-        6: 0x06,
+        4: address1,
+        5: address2,
+        6: address3,
     }
-    return switcher.get(argument, 0x04)
+    return switcher.get(argument, address1)
     
 while True:
     var = input("Enter 1 to 9: ")
