@@ -12,10 +12,8 @@
 */
 /*
   IBT-2 Motor Control Board driven by Arduino.
-
   Speed and direction controlled by a potentiometer attached to analog input 0.
   One side pin of the potentiometer (either one) to ground; the other side pin to +5V
-
   Connection to the IBT-2 board:
   IBT-2 pin 1 (RPWM) to Arduino pin 5(PWM)
   IBT-2 pin 2 (LPWM) to Arduino pin 6(PWM)

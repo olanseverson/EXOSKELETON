@@ -175,4 +175,3 @@ void IBT_Motor::PIDController (double Kp, double Kd, double Ki)
  || | 1.0 2019-03-13 - Yoland Nababan : Initial Release
  || #
  */
-

@@ -1,6 +1,7 @@
 
 import smbus
 import time
+import numpy as np
 # for RPI version 1, use "bus = smbus.SMBus(0)"
 bus = smbus.SMBus(1)
 
@@ -24,24 +25,26 @@ def readNumber(address):
 def encodeAddress(argument):
     switcher = {
         4: address1,
-        5: address2,
+        5: address2,    
         6: address3,
     }
     return switcher.get(argument, address1)
     
+writeNumber(0x05, [500/4])
 while True:
     var = input("Enter 1 to 9: ")
+    for i in range (len(var)):
+        var[i] = var[i]/4
     print(type(var), var)
     if not var:
         continue
     
     
-    writeNumber(0x04, var)
+    writeNumber(0x05, var)
     print "RPI: Hi Arduino, I sent you ", var
     # sleep one second
     time.sleep(1)
 
-    number = readNumber(0x04)
+    number = readNumber(0x05)
     print "Arduino: Hey RPI, I received a digit ", number
     print
-

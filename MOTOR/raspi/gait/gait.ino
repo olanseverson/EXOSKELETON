@@ -13,18 +13,19 @@ Ticker timer1(blink, tickTime);
 bool ledState;
 
 /*** TWI ***/
-#define SLAVE_ADDRESS 0x04
-//#define SLAVE_ADDRESS 0x05
+//#define SLAVE_ADDRESS 0x04
+#define SLAVE_ADDRESS 0x05
 //#define SLAVE_ADDRESS 0x06
 
-int number[10]= {
-  0,150,1,0,0,0,0,0,0,0};
+int number[10] = {
+  0, 150, 170, 0, 0, 0, 0, 0, 0, 0
+};
 int IsDone = 0; //CHECK IF THE MOTOR ALREADY IN IDLE MODE
 static int cnt;
 
 void setup()
 {
-  pinMode(LED_BUILTIN, OUTPUT); 
+  pinMode(LED_BUILTIN, OUTPUT);
   Serial.begin(115200);// start serial for output
 
   /** TICKER TIMER INIT **/
@@ -41,39 +42,38 @@ void setup()
   cnt = 0;
 
   Serial.println("Ready!");
-
+  while (number[0] == 0) {
+    Serial.println("waiting...");
+  }
 }
 
 void loop()
 {
-  //while (number[0]==0){
-  //    Serial.println("waiting...");
-  //}
-  //  Serial.println("oke");
-//  Hip.GoToAngle(number[1]*4, 60);
+
+//  Serial.println("oke");
+//  Hip.GoToAngle(number[1] * 4, 50);
 //  while (Hip._IsRotate != STOP)
 //  {
 //    timer1.update();
 //
 //  }
-  //number[0] = 0;
+//  number[0] = 0;
 
   /* Testing for GOTOANGLE*/
-  int pwm = 150;
-  Hip.GoToAngle(number[1]*4, 150); // 100
-  while (Hip._IsRotate != STOP)
-  {
-    timer1.update();
-  }
-  Hip.PID_i = 0;
-  Hip.SetSpeed(150);
-
-  Hip.GoToAngle(number[2]*4, 60);
-  while (Hip._IsRotate != STOP)
-  {
-    timer1.update();
-  }
-
+    int pwm = 150;
+    Hip.GoToAngle(number[1] * 4, 60); // 100 number[1] * 4
+    while (Hip._IsRotate != STOP)
+    {
+      timer1.update();
+    }
+    //  Hip.PID_i = 0;
+    //  Hip.SetSpeed(150);
+  
+    Hip.GoToAngle(number[2] * 4, 30);
+    while (Hip._IsRotate != STOP)
+    {
+      timer1.update();
+    }
 
   /*check blink() running time*/
   //     long int test = micros ();
@@ -83,6 +83,8 @@ void loop()
 
 /**============= TICKER TIMER FUNCTION ==============**/
 void blink() {
+  Serial.print(Hip.GetFilteredADC()); Serial.print(" "); Serial.print(number[1] * 4); Serial.print(" "); Serial.println(number[2] * 4);
+
   // update the ADC that has been filtered
   Hip.UpdateADC();
   if (timer1.counter() % 25 == 0)
@@ -100,7 +102,7 @@ void blink() {
   if (delta > 2)
   {
     Hip.Driver(Hip.GetRotate(), Hip.GetSpeed());
-  } 
+  }
   else
   {
     Hip.Driver(STOP, Hip.GetSpeed());
@@ -118,24 +120,21 @@ void blink() {
 
 /**============= RASPI-I2C FUNCTION ==============**/
 // callback for received data
-void receiveData(int byteCount){
-  while(Wire.available()) {
+void receiveData(int byteCount) {
+  while (Wire.available()) {
     //      Serial.print(i);
     //      Serial.print("=>");
     number[cnt] = Wire.read();
     //      Serial.print("data received: ");
-    Serial.println(number[cnt]);  
+    Serial.println(number[cnt]);
     cnt++;
-    if (cnt==byteCount) {
-      cnt=0;
+    if (cnt == byteCount) {
+      cnt = 0;
     }
   }
 }
 
 // callback for sending data
-void sendData(){
+void sendData() {
   Wire.write(number[1]);
 }
-
-
-
