@@ -51,7 +51,7 @@ void loop()
 {
 
 //  if (isReceived) {
-//    Serial.println(number[1]);
+    
 //    Serial.print(" ");
 //    Serial.println(number[1]);
 //    isReceived = false;
@@ -59,6 +59,7 @@ void loop()
   /* Testing for GOTOANGLE*/
 //  int pwm = 150;
   Hip.GoToAngle(number[1], 60); // 100 number[1] * 4
+  Serial.println(Hip._IsRotate);
   while (Hip._IsRotate != STOP)
   {
     timer1.update();
@@ -80,7 +81,7 @@ void loop()
 
 /**============= TICKER TIMER FUNCTION ==============**/
 void blink() {
-    Serial.print(Hip.GetFilteredADC()); Serial.print(" "); Serial.print(number[1]); Serial.print(" "); Serial.println(number[2]);
+    Serial.print(Hip.GetFilteredADC()); Serial.print(" "); Serial.print(number[1]); Serial.print(" "); Serial.println(Hip._IsRotate);
 
   // update the ADC that has been filtered
   Hip.UpdateADC();
@@ -95,10 +96,12 @@ void blink() {
 
     //    Serial.print(number[1]);
   }
-  int delta = abs(Hip.GetTarget() - Hip.GetADC());
-  if (delta > 2)
+  int delta = Hip.GetTarget() - Hip.GetADC();
+  if (abs(delta) > Hip.GetTolerance())
   {
-    Hip.Driver(Hip.GetRotate(), Hip.GetSpeed());
+    rotateState rotate = CW;
+    if (delta>0) {rotate = CCW;}
+    Hip.Driver(rotate, Hip.GetSpeed());
   }
   else
   {
@@ -109,9 +112,6 @@ void blink() {
   //testing blink for timing
   digitalWrite(LED_BUILTIN, ledState);
   ledState = !ledState;
-  //  Serial.print(Hip.GetADC()); Serial.print(" ");
-  //  Serial.print(Hip.GetFilteredADC()); Serial.println(" ");
-  //  Serial.print(Hip.GetRotate()); Serial.println(" ");
 }
 
 
@@ -125,6 +125,7 @@ word receiveWord(int byteCount) {
 }
 
 void receiveData(int byteCount) {
+  Hip._IsRotate = STOP;
   while (Wire.available()) {
     number[1] = receiveWord(byteCount);
     Serial.println(number[1]);
@@ -138,5 +139,5 @@ void receiveData(int byteCount) {
 
 // callback for sending data
 void sendData() {
-  Wire.write(number[1]);
+  Wire.write(Hip._IsRotate != STOP);
 }

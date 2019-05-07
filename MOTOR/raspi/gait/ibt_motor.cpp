@@ -22,6 +22,7 @@ serial(serial)
 {
   _filteredADC = analogRead(_SensorPin);
   _prevADC = _filteredADC;
+  _angleTolerance = 5;
   for (int i = 0; i < MA_COEFF; i++)
   {
     BUFFER[i] = _filteredADC;
@@ -106,14 +107,12 @@ void IBT_Motor::GoToAngle(int toAngle, int Speed)
   int delta = toAngle - _ADC;
   _target = toAngle;
   _speed = Speed;
-  if (delta > 2)
-  {
-    _IsRotate = CCW;
-  } 
-  else if (delta < -2)
-  {
+  if (abs(delta)> GetTolerance()){
     _IsRotate = CW;
-  } 
+    if (delta>0) {
+      _IsRotate = CCW;
+    }
+  }
   else
   { // stop
     _IsRotate = STOP;

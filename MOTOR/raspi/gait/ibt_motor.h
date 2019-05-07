@@ -55,6 +55,7 @@ class IBT_Motor
     int _LPWM;
     int _SensorPin;
     double _omega;
+    int _angleTolerance;
 
 
   public:
@@ -90,6 +91,9 @@ class IBT_Motor
     int GetOmega() {
       return _omega;
     }
+    int GetTolerance () {
+      return _angleTolerance;
+    }
 
     /*SETTER*/
     void SetRotate(rotateState Rotate) {
@@ -97,6 +101,10 @@ class IBT_Motor
     }
     void SetSpeed(int Speed) {
       _speed = Speed;
+    }
+
+    void SetTolerance (int tolerance){
+      _angleTolerance = tolerance;
     }
 
     // variable
