@@ -13,11 +13,13 @@ Ticker timer1(blink, tickTime);
 bool ledState;
 
 /*** TWI ***/
-#define SLAVE_ADDRESS 0x20
+#define SLAVE_ADDRESS 0x30
 
-int number[10] = {
-  0, 400, 600, 0, 0, 0, 0, 0, 0, 0
-};
+//int number[10] = {
+//  0, 500, 600, 0, 0, 0, 0, 0, 0, 0
+//};
+
+int number = 500;
 int IsDone = 0; //CHECK IF THE MOTOR ALREADY IN IDLE MODE
 static int cnt;
 bool isReceived = false;
@@ -42,7 +44,7 @@ void setup()
   cnt = 0;
 
   Serial.println("Ready!");
-//  while (number[0] == 0) {
+//  while (number == 0) {
 //    Serial.println("waiting...");
 //  }
 }
@@ -58,7 +60,7 @@ void loop()
 //  }
   /* Testing for GOTOANGLE*/
 //  int pwm = 150;
-  Hip.GoToAngle(number[1], 60); // 100 number[1] * 4
+  Hip.GoToAngle(number, 60); // 100 number[1] * 4
   Serial.println(Hip._IsRotate);
   while (Hip._IsRotate != STOP)
   {
@@ -81,7 +83,7 @@ void loop()
 
 /**============= TICKER TIMER FUNCTION ==============**/
 void blink() {
-    Serial.print(Hip.GetFilteredADC()); Serial.print(" "); Serial.print(number[1]); Serial.print(" "); Serial.println(Hip._IsRotate);
+    Serial.print(Hip.GetFilteredADC()); Serial.print(" "); Serial.print(number); Serial.print(" "); Serial.println(Hip._IsRotate);
 
   // update the ADC that has been filtered
   Hip.UpdateADC();
@@ -127,8 +129,8 @@ word receiveWord(int byteCount) {
 void receiveData(int byteCount) {
   Hip._IsRotate = STOP;
   while (Wire.available()) {
-    number[1] = receiveWord(byteCount);
-    Serial.println(number[1]);
+    number = receiveWord(byteCount);
+//    Serial.println(number[1]);
     cnt++;
     if (cnt == byteCount) {
       cnt = 0;
